@@ -1,0 +1,119 @@
+# config/intelligence.yaml
+# Threat intelligence and analysis configuration
+
+# Threat Scoring
+threat_scoring:
+  weights:
+    vulnerability_score: 0.4    # CVE/exploit attempts
+    tool_detection: 0.3         # Attack tool identification  
+    persistence_attempts: 0.2   # Session/backdoor creation
+    data_exfiltration: 0.1      # File downloads/uploads
+    
+  thresholds:
+    low: 30      # Reconnaissance/scanning
+    medium: 60   # Active exploitation attempts
+    high: 85     # Successful compromise indicators
+    critical: 95 # RCE/data exfiltration
+
+# Attack Classification
+attack_types:
+  reconnaissance:
+    indicators: ["robots.txt", "sitemap.xml", "/.well-known/"]
+    score: 20
+    
+  vulnerability_scanning:
+    indicators: ["nikto", "dirb", "gobuster", "dirbuster"]
+    score: 40
+    
+  exploitation:
+    indicators: ["shell.php", "cmd.php", "eval(", "system("]
+    score: 90
+    
+  credential_harvesting:
+    indicators: ["wp-login.php", "admin.php", "login.aspx"]
+    score: 60
+
+# IP Reputation
+ip_reputation:
+  whitelist:
+    - "127.0.0.1"
+    - "::1"
+    - "10.0.0.0/8"
+    - "172.16.0.0/12"
+    - "192.168.0.0/16"
+    
+  known_scanners:
+    - "shodan.io"
+    - "censys.io"
+    - "shadowserver.org"
+    score_modifier: -20  # Reduce score for known scanners
+    
+  tor_exit_nodes:
+    check_enabled: true
+    score_modifier: 15   # Increase score for Tor
+
+# Session Tracking
+session_tracking:
+  correlation_window: 3600  # 1 hour
+  max_requests_per_session: 1000
+  suspicious_patterns:
+    rapid_requests: 
+      threshold: 50      # requests per minute
+      score_increase: 20
+      
+    path_enumeration:
+      threshold: 20      # different 404s
+      score_increase: 30
+      
+    credential_attempts:
+      threshold: 5       # failed logins
+      score_increase: 40
+
+# Data Collection
+data_collection:
+  capture_headers: true
+  capture_body: true
+  max_body_size: 10240    # 10KB
+  capture_files: true
+  max_file_size: 52428800 # 50MB
+  
+  retention:
+    logs: 90            # days
+    files: 30           # days
+    sessions: 7         # days
+
+# Export Formats
+export_formats:
+  misp:
+    enabled: true
+    url: "https://misp.local"
+    auth_key: "${MISP_AUTH_KEY}"
+    
+  stix:
+    enabled: false
+    version: "2.1"
+    
+  json:
+    enabled: true
+    structured: true
+    
+# Alert Thresholds  
+alerts:
+  high_threat_score:
+    threshold: 85
+    notify: ["security@company.com"]
+    
+  mass_scanning:
+    requests_per_minute: 100
+    notify: ["soc@company.com"]
+    
+  rce_attempts:
+    patterns: ["system(", "exec(", "eval(", "shell_exec("]
+    notify: ["incident@company.com"]
+
+# Machine Learning
+ml_detection:
+  enabled: false
+  model_path: "models/threat_classifier.pkl"
+  features: ["request_length", "header_count", "path_depth", "param_count"]
+  confidence_threshold: 0.8

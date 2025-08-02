@@ -1,0 +1,220 @@
+# config/profiles/apache.yaml
+# Apache 2.4 Server Profile for Realistic Deception
+
+name: "apache_2_4_ubuntu"
+description: "Apache 2.4.41 on Ubuntu 20.04 with PHP"
+
+# HTTP Headers
+headers:
+  server: "Apache/2.4.41 (Ubuntu)"
+  x_powered_by: "PHP/7.4.3"
+  x_mod_pagespeed: "1.13.35.2-0"
+  vary: "Accept-Encoding"
+  keep_alive: "timeout=5, max=100"
+  connection: "Keep-Alive"
+
+# Response Timing (seconds)
+timing:
+  base_response_time:
+    min: 0.05
+    max: 0.3
+  error_responses:
+    404:
+      min: 0.8
+      max: 1.5
+    403:
+      min: 0.3
+      max: 0.8
+    500:
+      min: 1.0
+      max: 2.5
+    503:
+      min: 0.1
+      max: 0.4
+
+# Error Page Templates
+error_pages:
+  404:
+    title: "404 Not Found"
+    template: |
+      <!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML 2.0//EN">
+      <html><head>
+      <title>404 Not Found</title>
+      </head><body>
+      <h1>Not Found</h1>
+      <p>The requested URL {{path}} was not found on this server.</p>
+      <hr>
+      <address>Apache/2.4.41 (Ubuntu) Server at {{host}} Port {{port}}</address>
+      </body></html>
+  
+  403:
+    title: "403 Forbidden"
+    template: |
+      <!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML 2.0//EN">
+      <html><head>
+      <title>403 Forbidden</title>
+      </head><body>
+      <h1>Forbidden</h1>
+      <p>You don't have permission to access {{path}} on this server.</p>
+      <hr>
+      <address>Apache/2.4.41 (Ubuntu) Server at {{host}} Port {{port}}</address>
+      </body></html>
+  
+  500:
+    title: "500 Internal Server Error"
+    template: |
+      <!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML 2.0//EN">
+      <html><head>
+      <title>500 Internal Server Error</title>
+      </head><body>
+      <h1>Internal Server Error</h1>
+      <p>The server encountered an internal error or misconfiguration and was unable to complete your request.</p>
+      <p>Please contact the server administrator at webmaster@{{host}} to inform them of the time this error occurred, and the actions you performed just before this error.</p>
+      <p>More information about this error may be available in the server error log.</p>
+      <hr>
+      <address>Apache/2.4.41 (Ubuntu) Server at {{host}} Port {{port}}</address>
+      </body></html>
+
+# Vulnerable Paths & Honeypots
+vulnerable_paths:
+  # WordPress vulnerabilities
+  - path: "/wp-admin/"
+    description: "WordPress admin panel"
+    threat_score: 40
+    response_type: "login_form"
+    
+  - path: "/wp-login.php"
+    description: "WordPress login page"
+    threat_score: 35
+    response_type: "login_form"
+    
+  - path: "/wp-content/uploads/"
+    description: "WordPress uploads directory"
+    threat_score: 25
+    response_type: "directory_listing"
+    
+  # PHPMyAdmin
+  - path: "/phpmyadmin/"
+    description: "PHPMyAdmin interface"
+    threat_score: 60
+    response_type: "login_form"
+    
+  - path: "/pma/"
+    description: "PHPMyAdmin shortcut"
+    threat_score: 55
+    response_type: "redirect"
+    redirect_to: "/phpmyadmin/"
+    
+  # Administrative interfaces
+  - path: "/admin/"
+    description: "Generic admin panel"
+    threat_score: 45
+    response_type: "login_form"
+    
+  - path: "/administrator/"
+    description: "Administrator interface"
+    threat_score: 50
+    response_type: "login_form"
+    
+  # Common vulnerable files
+  - path: "/config.php"
+    description: "Configuration file"
+    threat_score: 70
+    response_type: "php_error"
+    
+  - path: "/phpinfo.php"
+    description: "PHP info disclosure"
+    threat_score: 30
+    response_type: "phpinfo"
+    
+  - path: "/shell.php"
+    description: "Web shell"
+    threat_score: 95
+    response_type: "shell_interface"
+    
+  - path: "/backup.sql"
+    description: "Database backup"
+    threat_score: 80
+    response_type: "sql_dump"
+
+# Directory Listing Behavior
+directory_listing:
+  enabled: true
+  show_hidden_files: false
+  default_index_files: ["index.html", "index.php", "default.htm"]
+  icons:
+    folder: "[DIR]"
+    php: "[PHP]"
+    html: "[HTM]"
+    text: "[TXT]"
+    unknown: "[   ]"
+
+# Behavioral Patterns
+behavior:
+  # Response probability (0.0 - 1.0)
+  error_probability:
+    500: 0.02  # 2% chance of 500 error
+    503: 0.01  # 1% chance of 503 error
+    timeout: 0.005  # 0.5% chance of timeout
+  
+  # Rate limiting simulation
+  rate_limiting:
+    enabled: true
+    max_requests_per_minute: 60
+    burst_allowance: 10
+    ban_duration: 300  # 5 minutes
+  
+  # Session behavior
+  sessions:
+    cookie_name: "PHPSESSID"
+    session_timeout: 1800  # 30 minutes
+    regenerate_on_login: true
+
+# Security Features (for realism)
+security_headers:
+  x_frame_options: "SAMEORIGIN"
+  x_content_type_options: "nosniff"
+  x_xss_protection: "1; mode=block"
+  strict_transport_security: null  # Not always present
+  content_security_policy: null   # Not always configured
+
+# File Upload Handling
+file_uploads:
+  max_file_size: "2M"
+  allowed_extensions: [".jpg", ".jpeg", ".png", ".gif", ".pdf", ".doc", ".docx"]
+  upload_directory: "/var/www/html/uploads/"
+  temp_directory: "/tmp/"
+
+# Log Patterns (what Apache would log)
+log_patterns:
+  access_log_format: '%h %l %u %t "%r" %>s %O "%{Referer}i" "%{User-Agent}i"'
+  error_log_format: '[%{%a %b %d %H:%M:%S.%f %Y}t] [%l] [pid %P] %F: %E: [client %a] %M'
+
+# Common Apache Modules (affects behavior)
+modules:
+  - mod_rewrite
+  - mod_ssl
+  - mod_php7
+  - mod_deflate
+  - mod_headers
+  - mod_expires
+  - mod_security2
+  - mod_evasive
+
+# SSL/TLS Configuration
+ssl:
+  protocols: ["TLSv1.2", "TLSv1.3"]
+  ciphers: [
+    "ECDHE-RSA-AES256-GCM-SHA384",
+    "ECDHE-RSA-AES128-GCM-SHA256",
+    "ECDHE-RSA-AES256-SHA384",
+    "ECDHE-RSA-AES128-SHA256"
+  ]
+  prefer_server_ciphers: true
+  
+# Fingerprinting Resistance
+anti_fingerprinting:
+  vary_response_times: true
+  randomize_error_messages: false  # Apache is consistent
+  hide_server_tokens: false        # Default Apache shows version
+  fake_load_behavior: true         # Simulate server under load

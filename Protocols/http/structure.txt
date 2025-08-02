@@ -1,0 +1,74 @@
+http/
+├── main.py
+├── config/
+│   ├── profiles/
+│   │   ├── apache.yaml
+│   │   ├── nginx.yaml
+│   │   └── iis.yaml
+│   ├── vulnerabilities.yaml
+│   └── intelligence.yaml
+├── middleware/
+│   ├── __init__.py
+│   ├── intelligence.py
+│   ├── capture.py
+│   └── deception.py
+├── core/
+│   ├── __init__.py
+│   ├── intelligence.py
+│   ├── response_engine.py
+│   └── correlation.py
+├── analysis/
+│   ├── __init__.py
+│   ├── pattern_detector.py
+│   ├── tool_fingerprinter.py
+│   ├── payload_analyzer.py
+│   └── tls_analyzer.py
+├── routes/
+│   ├── __init__.py
+│   ├── vulnerable_paths.py
+│   ├── phishing.py
+│   └── file_server.py
+├── intelligence/
+│   ├── __init__.py
+│   ├── exporter.py
+│   ├── storage.py
+│   └── dashboard.py
+├── utils/
+│   ├── __init__.py
+│   ├── logger.py
+│   └── helpers.py
+├── templates/
+├── static/
+│   ├── css/
+│   └── js/
+├── decoys/
+│   ├── phishing/
+│   └── malware/
+├── certs/
+├── logs/
+└── tests/
+   ├── __init__.py
+   └── test_http.py
+   
+   
+   
+   
+ Development Order A-Z:
+
+utils/logger.py - Core logging foundation
+/profiles/apache.yaml - Basic server profile
+core/response_engine.py - Response generation
+middleware/intelligence.py - Request capture
+core/intelligence.py - Threat analysis
+main.py - FastAPI app with middleware
+routes/vulnerable_paths.py - Basic vulnerable endpoints
+routes/phishing.py - Credential capture
+analysis/pattern_detector.py - Attack classification
+analysis/tool_fingerprinter.py - Tool identification
+core/correlation.py - Session tracking
+middleware/capture.py - Packet capture
+analysis/payload_analyzer.py - File analysis
+intelligence/storage.py - Data persistence
+intelligence/dashboard.py - Monitoring interface
+
+Start with logger → profiles → response engine → middleware → main app. Test each component before adding the next.

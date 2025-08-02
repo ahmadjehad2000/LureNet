@@ -1,0 +1,51 @@
+http/
+├── main.py
+├── config/
+│   ├── profiles/
+│   │   ├── apache.yaml
+│   │   ├── nginx.yaml
+│   │   └── iis.yaml
+│   ├── vulnerabilities.yaml
+│   └── intelligence.yaml
+├── middleware/
+│   ├── __init__.py
+│   ├── intelligence.py
+│   ├── capture.py
+│   └── deception.py
+├── core/
+│   ├── __init__.py
+│   ├── intelligence.py
+│   ├── response_engine.py
+│   └── correlation.py
+├── analysis/
+│   ├── __init__.py
+│   ├── pattern_detector.py
+│   ├── tool_fingerprinter.py
+│   ├── payload_analyzer.py
+│   └── tls_analyzer.py
+├── routes/
+│   ├── __init__.py
+│   ├── vulnerable_paths.py
+│   ├── phishing.py
+│   └── file_server.py
+├── intelligence/
+│   ├── __init__.py
+│   ├── exporter.py
+│   ├── storage.py
+│   └── dashboard.py
+├── utils/
+│   ├── __init__.py
+│   ├── logger.py
+│   └── helpers.py
+├── templates/
+├── static/
+│   ├── css/
+│   └── js/
+├── decoys/
+│   ├── phishing/
+│   └── malware/
+├── certs/
+├── logs/
+└── tests/
+   ├── __init__.py
+   └── test_http.py
