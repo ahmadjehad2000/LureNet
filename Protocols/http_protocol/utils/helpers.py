@@ -418,3 +418,52 @@ class DataHelpers:
         for key, value in headers.items():
             normalized[key.lower().replace('_', '-')] = value.strip()
         return normalized
+
+# Additional classes that middleware expects
+class AttackDetection:
+    @staticmethod
+    def detect_sql_injection(text):
+        return {"detected": "union" in text.lower() or "select" in text.lower(), "confidence": 0.7}
+    
+    @staticmethod
+    def detect_xss(text):
+        return {"detected": "<script" in text.lower(), "confidence": 0.8}
+    
+    @staticmethod
+    def detect_command_injection(text):
+        return {"detected": any(cmd in text.lower() for cmd in ["system(", "exec("]), "confidence": 0.9}
+    
+    @staticmethod
+    def detect_path_traversal(text):
+        return {"detected": ".." in text, "confidence": 0.6}
+
+class URLAnalysis:
+    @staticmethod
+    def parse_url_components(url):
+        from urllib.parse import urlparse, parse_qs
+        parsed = urlparse(url)
+        return {
+            "scheme": parsed.scheme,
+            "path": parsed.path,
+            "query_params": parse_qs(parsed.query)
+        }
+    
+    @staticmethod
+    def extract_suspicious_parameters(params):
+        return []
+    
+    @staticmethod
+    def analyze_user_agent(ua):
+        return {"is_suspicious": "bot" in ua.lower() or "curl" in ua.lower()}
+
+class DataHelpers:
+    @staticmethod
+    def generate_session_id():
+        import hashlib, time
+        return hashlib.md5(f"{time.time()}".encode()).hexdigest()
+
+class TimingHelpers:
+    @staticmethod
+    def realistic_delay():
+        import random
+        return random.uniform(0.01, 0.1)

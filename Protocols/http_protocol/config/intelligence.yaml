@@ -43,10 +43,6 @@ ip_reputation:
     - "192.168.0.0/16"
     
   known_scanners:
-    - "shodan.io"
-    - "censys.io"
-    - "shadowserver.org"
-    score_modifier: -20  # Reduce score for known scanners
     
   tor_exit_nodes:
     check_enabled: true

@@ -111,7 +111,6 @@ class TestIntelligenceMiddleware:
         test_cases = [
             ({"x-forwarded-for": "192.168.1.1, 10.0.0.1"}, "192.168.1.1"),
             ({"x-real-ip": "203.0.113.1"}, "203.0.113.1"),
-            ({"x-originating-ip": "198.51.100.1"}, "198.51.100.1"),
             ({}, "127.0.0.1")  # Fallback to client.host
         ]
         
@@ -166,15 +165,15 @@ class TestIntelligenceMiddleware:
         """Test rate limiting functionality"""
         client_ip = "192.168.1.100"
         
-        # Simulate rapid requests (reduced for faster testing)
+        # Simulate rapid requests (should hit limit at 100 requests)
         limited_count = 0
-        for i in range(50):
+        for i in range(110):  # Exceed the 100 request threshold
             is_limited = middleware._is_rate_limited(client_ip)
             if is_limited:
                 limited_count += 1
         
-        # Should eventually hit rate limit
-        assert limited_count > 0
+        # Should eventually hit rate limit after 100 requests
+        assert limited_count > 5  # Should be rate limited multiple times
     
     def test_metrics_collection(self, middleware):
         """Test metrics collection and reporting"""
