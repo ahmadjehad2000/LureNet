@@ -1,85 +1,35 @@
-# config/vulnerabilities.yaml
-# Vulnerability simulation configuration
-
-# CVE Simulations
-cve_simulations:
-  # Apache vulnerabilities
-  CVE-2021-41773:
-    description: "Apache HTTP Server Path Traversal"
-    paths: ["/cgi-bin/.%2e/%2e%2e/%2e%2e/%2e%2e/etc/passwd"]
-    threat_score: 95
-    response_type: "path_traversal"
-    
-  CVE-2022-22965:
-    description: "Spring4Shell RCE"
-    paths: ["/spring-boot-actuator/"]
-    threat_score: 98
-    response_type: "rce_attempt"
-    
-  # WordPress vulnerabilities
-  CVE-2021-34527:
-    description: "WordPress File Upload RCE"
-    paths: ["/wp-content/uploads/", "/wp-admin/media-upload.php"]
-    threat_score: 90
-    response_type: "file_upload"
-
-# Common Attack Patterns
 attack_patterns:
   sql_injection:
     patterns:
-      - "' OR 1=1--"
-      - "UNION SELECT"
-      - "'; DROP TABLE"
-      - "1' AND SLEEP(5)#"
-    threat_score: 80
+    - ''' OR 1=1--'
+    - UNION SELECT
+    - '''; DROP TABLE'
     response_delay: 2.5
-    
+    threat_score: 80
   xss:
     patterns:
-      - "<script>alert("
-      - "javascript:"
-      - "onerror="
-      - "onload="
+    - <script>alert(
+    - 'javascript:'
+    - onerror=
+    response_type: reflected_xss
     threat_score: 60
-    response_type: "reflected_xss"
-    
-  lfi:
-    patterns:
-      - "../../../etc/passwd"
-      - "..\\..\\..\\windows\\system32"
-      - "%2e%2e%2f"
-    threat_score: 85
-    response_type: "file_disclosure"
-
-# Honeypot Traps
-honeypot_traps:
-  fake_admin_panels:
-    - path: "/admin.php"
-      credentials: ["admin:admin", "admin:password"]
-      session_timeout: 300
-      
-  fake_databases:
-    - path: "/backup.sql"
-      file_size: "2.3MB"
-      contains: ["user_credentials", "payment_info"]
-      
-  fake_configs:
-    - path: "/config.php.bak"
-      sensitive_data: ["db_password", "api_keys"]
-      
-# Tool Signatures
+cve_simulations:
+  CVE-2021-41773:
+    description: Apache HTTP Server Path Traversal
+    paths:
+    - /cgi-bin/.%2e/%2e%2e/%2e%2e/%2e%2e/etc/passwd
+    response_type: path_traversal
+    threat_score: 95
 tool_signatures:
-  sqlmap:
-    user_agents: ["sqlmap/", "User-Agent: sqlmap"]
-    headers: ["X-Originating-IP", "X-Remote-IP"]
-    threat_score: 85
-    
   nmap:
-    user_agents: ["Nmap Scripting Engine"]
-    patterns: ["OPTIONS *", "GET / HTTP/1.0"]
+    patterns:
+    - OPTIONS *
+    - GET / HTTP/1.0
     threat_score: 40
-    
-  burp:
-    user_agents: ["Burp Suite"]
-    headers: ["X-Burp-Extensions"]
-    threat_score: 70
+    user_agents:
+    - Nmap Scripting Engine
+  sqlmap:
+    threat_score: 85
+    user_agents:
+    - sqlmap/
+    - 'User-Agent: sqlmap'

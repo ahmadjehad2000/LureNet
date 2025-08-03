@@ -1,0 +1,9 @@
+fastapi>=0.100.0
+uvicorn[standard]>=0.20.0
+pyyaml>=6.0
+click>=8.0.0
+python-multipart>=0.0.6
+starlette>=0.27.0
+# Optional dependencies
+python-magic>=0.4.24
+psutil>=5.8.0

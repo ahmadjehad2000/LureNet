@@ -1,0 +1,217 @@
+# config/profiles/iis.yaml
+# Microsoft IIS 10.0 Server Profile for Realistic Deception
+
+name: "iis_10_windows_server"
+description: "Microsoft IIS 10.0 on Windows Server 2019 with ASP.NET"
+
+# HTTP Headers
+headers:
+  server: "Microsoft-IIS/10.0"
+  x_powered_by: "ASP.NET"
+  x_aspnet_version: "4.0.30319"
+  x_aspnetmvc_version: "5.2"
+
+# Response Timing (seconds) - IIS is typically slower
+timing:
+  base_response_time:
+    min: 0.08
+    max: 0.5
+  error_responses:
+    404:
+      min: 0.6
+      max: 1.2
+    403:
+      min: 0.4
+      max: 0.9
+    500:
+      min: 1.2
+      max: 2.8
+    503:
+      min: 0.2
+      max: 0.6
+
+# Error Page Templates - IIS style
+error_pages:
+  404:
+    title: "The resource cannot be found."
+    template: |
+      <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+      <html xmlns="http://www.w3.org/1999/xhtml">
+      <head>
+      <title>IIS 10.0 Detailed Error - 404.0 - Not Found</title>
+      <style type="text/css">
+      body{margin:0;font-size:.7em;font-family:Verdana,Arial,Helvetica,sans-serif;background:#CBE1EF;}
+      </style>
+      </head>
+      <body>
+      <div id="header"><h1>Server Error in Application</h1></div>
+      <div id="content">
+      <div class="content-container">
+      <h2>404 - File or directory not found.</h2>
+      <h3>The resource you are looking for might have been removed, had its name changed, or is temporarily unavailable.</h3>
+      </div>
+      </div>
+      </body>
+      </html>
+  
+  403:
+    title: "Forbidden"
+    template: |
+      <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+      <html xmlns="http://www.w3.org/1999/xhtml">
+      <head><title>403 - Forbidden: Access is denied.</title></head>
+      <body><h1>403 - Forbidden: Access is denied.</h1>
+      <p>You do not have permission to view this directory or page using the credentials that you supplied.</p>
+      </body></html>
+  
+  500:
+    title: "Internal Server Error"
+    template: |
+      <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+      <html xmlns="http://www.w3.org/1999/xhtml">
+      <head><title>Runtime Error</title></head>
+      <body>
+      <h2>Server Error in '/' Application.</h2>
+      <h3>Runtime Error</h3>
+      <p>Description: An application error occurred on the server. The current custom error settings for this application prevent the details of the application error from being viewed remotely.</p>
+      <p>Details: To enable the details of this specific error message to be viewable on remote machines, please create a &lt;customErrors&gt; tag within a "web.config" configuration file.</p>
+      </body></html>
+
+# Vulnerable Paths & Honeypots
+vulnerable_paths:
+  # ASP.NET applications
+  - path: "/admin.aspx"
+    description: "ASP.NET admin page"
+    threat_score: 50
+    response_type: "aspnet_login"
+    
+  - path: "/login.aspx"
+    description: "ASP.NET login page"
+    threat_score: 40
+    response_type: "aspnet_login"
+    
+  - path: "/default.aspx"
+    description: "Default ASP.NET page"
+    threat_score: 25
+    response_type: "aspnet_page"
+    
+  # IIS specific paths
+  - path: "/iisadmin/"
+    description: "IIS Admin interface"
+    threat_score: 70
+    response_type: "iis_admin"
+    
+  - path: "/aspnet_client/"
+    description: "ASP.NET client files"
+    threat_score: 30
+    response_type: "directory_listing"
+    
+  # Common Windows paths
+  - path: "/web.config"
+    description: "ASP.NET configuration file"
+    threat_score: 85
+    response_type: "config_file"
+    
+  - path: "/global.asax"
+    description: "ASP.NET application file"
+    threat_score: 75
+    response_type: "aspnet_file"
+    
+  - path: "/bin/"
+    description: "ASP.NET binaries directory"
+    threat_score: 80
+    response_type: "403_error"
+    
+  # SharePoint paths
+  - path: "/_layouts/"
+    description: "SharePoint layouts"
+    threat_score: 60
+    response_type: "sharepoint_page"
+    
+  - path: "/_vti_bin/"
+    description: "SharePoint/FrontPage extensions"
+    threat_score: 55
+    response_type: "directory_listing"
+
+# Directory Listing Behavior
+directory_listing:
+  enabled: false  # IIS typically disables directory browsing
+  show_hidden_files: false
+  default_index_files: ["default.aspx", "default.htm", "default.html", "index.html"]
+
+# Behavioral Patterns
+behavior:
+  # Response probability (0.0 - 1.0)
+  error_probability:
+    500: 0.03   # 3% chance of 500 error
+    503: 0.02   # 2% chance of 503 error
+    timeout: 0.008  # 0.8% chance of timeout
+  
+  # Rate limiting simulation
+  rate_limiting:
+    enabled: true
+    max_requests_per_minute: 80
+    burst_allowance: 15
+    ban_duration: 900  # 15 minutes
+  
+  # Session behavior
+  sessions:
+    cookie_name: "ASP.NET_SessionId"
+    session_timeout: 1200  # 20 minutes
+    regenerate_on_login: true
+
+# Security Features
+security_headers:
+  x_frame_options: "SAMEORIGIN"
+  x_content_type_options: "nosniff"
+  x_xss_protection: "1; mode=block"
+  strict_transport_security: null  # Not always configured on IIS
+  x_powered_by: "ASP.NET"
+
+# File Upload Handling
+file_uploads:
+  max_file_size: "4M"
+  allowed_extensions: [".jpg", ".jpeg", ".png", ".gif", ".pdf", ".doc", ".docx", ".xlsx"]
+  upload_directory: "C:\\inetpub\\wwwroot\\uploads\\"
+  temp_directory: "C:\\Windows\\Temp\\"
+
+# Log Patterns
+log_patterns:
+  access_log_format: '#Software: Microsoft Internet Information Services 10.0'
+  error_log_format: '#Software: Microsoft Internet Information Services 10.0'
+
+# Common IIS Modules
+modules:
+  - DefaultDocumentModule
+  - DirectoryListingModule
+  - StaticFileModule
+  - AnonymousAuthenticationModule
+  - WindowsAuthenticationModule
+  - AspNetCoreModule
+  - RewriteModule
+  - CompressionModule
+
+# SSL/TLS Configuration (IIS style)
+ssl:
+  protocols: ["TLSv1.2", "TLSv1.3"]
+  ciphers: [
+    "TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384",
+    "TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256",
+    "TLS_DHE_RSA_WITH_AES_256_GCM_SHA384",
+    "TLS_DHE_RSA_WITH_AES_128_GCM_SHA256"
+  ]
+  prefer_server_ciphers: true
+  
+# Application Pool Behavior
+application_pool:
+  idle_timeout: 1200  # 20 minutes
+  recycling_conditions: ["memory", "requests", "time"]
+  process_model: "ApplicationPoolIdentity"
+  
+# Fingerprinting Resistance
+anti_fingerprinting:
+  vary_response_times: true
+  randomize_error_messages: false  # IIS is quite consistent
+  hide_server_tokens: false        # Default IIS shows version
+  fake_load_behavior: true
+  simulate_app_pool_recycle: true   # Occasional delays
