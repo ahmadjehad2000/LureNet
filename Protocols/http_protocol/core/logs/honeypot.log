@@ -1,0 +1,8 @@
+2025-08-03 03:27:41 | WARNING | honeypot | [THREAT] INTEGRATION_001 | reconnaissance | Score: 47
+2025-08-03 03:27:41 | INFO | honeypot | Session correlation: SES_d4881dd07065 - 1 events, threat score: 47.0
+2025-08-03 03:27:41 | INFO | honeypot | Session correlation: SES_6a54b7bd0e11 - 1 events, threat score: 60
+2025-08-03 03:27:41 | WARNING | honeypot | [THREAT] TEST_001 | reconnaissance | Score: 0
+2025-08-03 03:28:21 | WARNING | honeypot | [THREAT] INTEGRATION_001 | reconnaissance | Score: 47
+2025-08-03 03:28:21 | INFO | honeypot | Session correlation: SES_beda384fe9f1 - 1 events, threat score: 47.0
+2025-08-03 03:28:21 | INFO | honeypot | Session correlation: SES_981cd1c93fbd - 1 events, threat score: 60
+2025-08-03 03:28:21 | WARNING | honeypot | [THREAT] TEST_001 | reconnaissance | Score: 0

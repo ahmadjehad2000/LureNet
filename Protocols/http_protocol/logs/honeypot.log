@@ -1,0 +1,15 @@
+2025-08-04 01:58:12 | WARNING | honeypot | Failed to load intelligence config: while parsing a block collection
+  in "config/intelligence.yaml", line 46, column 5
+expected <block end>, but found '?'
+  in "config/intelligence.yaml", line 49, column 5
+2025-08-04 01:58:12 | INFO | honeypot | C acceleration not available, using Python implementation
+2025-08-04 01:58:12 | INFO | honeypot | Capture middleware initialized - Buffer: 0.1MB, Max body: 1.0KB, Raw capture: True
+2025-08-04 01:58:12 | INFO | honeypot | C acceleration not available, using Python implementation
+2025-08-04 01:58:12 | INFO | honeypot | Capture middleware initialized - Buffer: 0.1MB, Max body: 1.0KB, Raw capture: True
+2025-08-04 01:58:12 | INFO | honeypot | Deception engine loaded - C acceleration: False
+2025-08-04 01:58:12 | WARNING | honeypot | Admin trap triggered: 127.0.0.1 -> /admin
+2025-08-04 01:58:12 | WARNING | honeypot | Admin trap triggered: 127.0.0.1 -> /wp-admin
+2025-08-04 01:58:12 | WARNING | honeypot | Admin trap triggered: 127.0.0.1 -> /phpmyadmin
+2025-08-04 01:58:12 | INFO | honeypot | Deception engine loaded - C acceleration: False
+2025-08-04 01:58:12 | INFO | honeypot | Deception engine loaded - C acceleration: False
+2025-08-04 01:58:12 | INFO | honeypot | Deception engine loaded - C acceleration: False
